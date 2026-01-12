@@ -39,29 +39,29 @@ dev-detached: ## Start development server in background
 build: ## Build production version
 	@echo "🏗️  Building production version..."
 	@docker-compose build
-	@echo "✅ Production build complete!"
+	@echo " Production build complete!"
 
 start: ## Start production server
-	@echo "🚀 Starting production server..."
+	@echo " Starting production server..."
 	@docker-compose up -d
-	@echo "✅ Production server started!"
-	@echo "📍 Frontend available at: http://localhost:3000"
+	@echo " Production server started!"
+	@echo " Frontend available at: http://localhost:3000"
 
 stop: ## Stop all running containers
-	@echo "🛑 Stopping all containers..."
+	@echo " Stopping all containers..."
 	@docker-compose -f docker-compose.dev.yml down
 	@docker-compose down
-	@echo "✅ All containers stopped!"
+	@echo " All containers stopped!"
 
 clean: ## Clean up Docker containers, images, and cache
-	@echo "🧹 Cleaning up Docker resources..."
+	@echo " Cleaning up Docker resources..."
 	@docker-compose -f docker-compose.dev.yml down --remove-orphans
 	@docker-compose down --remove-orphans
 	@docker system prune -f
-	@echo "✅ Cleanup complete!"
+	@echo " Cleanup complete!"
 
 logs: ## View application logs
-	@echo "📋 Viewing application logs (Press Ctrl+C to exit)..."
+	@echo " Viewing application logs (Press Ctrl+C to exit)..."
 	@docker-compose -f docker-compose.dev.yml logs -f frontend-dev
 
 logs-all: ## View all container logs

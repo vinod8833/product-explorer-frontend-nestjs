@@ -11,7 +11,8 @@ export function useNavigation() {
     try {
       setIsLoading(true);
       const response = await api.get('/navigation');
-      setData(response.data.data);
+      // API returns array directly, not wrapped in data property
+      setData(response.data);
       setError(undefined);
     } catch (err) {
       setError(err);
