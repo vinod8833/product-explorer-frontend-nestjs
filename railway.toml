@@ -3,6 +3,5 @@ builder = "dockerfile"
 
 [environments.production]
 variables = { 
-  NODE_ENV = "production",
-  NEXT_PUBLIC_API_URL = "https://product-explorer-backend-nestjs-production.up.railway.app/api"
+  NODE_ENV = "production"
 }
