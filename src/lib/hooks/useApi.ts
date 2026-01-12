@@ -11,11 +11,31 @@ export function useNavigation() {
     try {
       setIsLoading(true);
       const response = await api.get('/navigation');
-      // API returns array directly, not wrapped in data property
-      setData(response.data);
+      
+      // Check if the response has the expected structure
+      if (response.data && typeof response.data === 'object') {
+        // If it's a message response (backend not fully set up)
+        if (response.data.message && !Array.isArray(response.data)) {
+          console.warn('Backend API not fully configured for navigation:', response.data.message);
+          // Return empty array
+          setData([]);
+        } else if (Array.isArray(response.data)) {
+          // Direct array response (expected format)
+          setData(response.data);
+        } else {
+          // Fallback
+          setData([]);
+        }
+      } else {
+        // Fallback for unexpected response structure
+        setData([]);
+      }
+      
       setError(undefined);
     } catch (err) {
+      console.error('Navigation fetch error:', err);
       setError(err);
+      setData([]);
     } finally {
       setIsLoading(false);
     }
@@ -52,10 +72,53 @@ export function useCategories(navigationId?: number, page = 1, limit = 20) {
       
       const url = `/categories?${params}`;
       const response = await api.get(url);
-      setData(response.data);
+      
+      // Check if the response has the expected structure
+      if (response.data && typeof response.data === 'object') {
+        // If it's a message response (backend not fully set up)
+        if (response.data.message && !response.data.data) {
+          console.warn('Backend API not fully configured for categories:', response.data.message);
+          // Return empty data structure
+          setData({
+            data: [],
+            total: 0,
+            page: page,
+            limit: limit,
+            totalPages: 0,
+            hasNext: false,
+            hasPrev: false
+          });
+        } else {
+          // Normal response with data
+          setData(response.data);
+        }
+      } else {
+        // Fallback for unexpected response structure
+        setData({
+          data: [],
+          total: 0,
+          page: page,
+          limit: limit,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false
+        });
+      }
+      
       setError(undefined);
     } catch (err) {
+      console.error('Categories fetch error:', err);
       setError(err);
+      // Set empty data on error
+      setData({
+        data: [],
+        total: 0,
+        page: page,
+        limit: limit,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false
+      });
     } finally {
       setIsLoading(false);
     }
@@ -136,11 +199,52 @@ export function useProducts(
       
       const response = await api.get(url);
       
-      setData(response.data);
+      // Check if the response has the expected structure
+      if (response.data && typeof response.data === 'object') {
+        // If it's a message response (backend not fully set up)
+        if (response.data.message && !response.data.data) {
+          console.warn('Backend API not fully configured:', response.data.message);
+          // Return empty data structure
+          setData({
+            data: [],
+            total: 0,
+            page: page,
+            limit: limit,
+            totalPages: 0,
+            hasNext: false,
+            hasPrev: false
+          });
+        } else {
+          // Normal response with data
+          setData(response.data);
+        }
+      } else {
+        // Fallback for unexpected response structure
+        setData({
+          data: [],
+          total: 0,
+          page: page,
+          limit: limit,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false
+        });
+      }
+      
       setError(undefined);
     } catch (err) {
       console.error('Products fetch error:', err);
       setError(err);
+      // Set empty data on error
+      setData({
+        data: [],
+        total: 0,
+        page: page,
+        limit: limit,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false
+      });
     } finally {
       setIsLoading(false);
     }

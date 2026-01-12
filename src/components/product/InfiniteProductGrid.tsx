@@ -91,33 +91,36 @@ export default function InfiniteProductGrid({
 
   useEffect(() => {
     if (products && !isLoading) {
+      // Ensure products.data exists and is an array
+      const productsData = products.data || [];
+      
       if (process.env.NODE_ENV === 'development') {
         console.log('InfiniteProductGrid received products:', {
           page: currentPage,
-          count: products.data.length,
+          count: productsData.length,
           total: products.total,
-          firstProduct: products.data[0]?.id,
-          lastProduct: products.data[products.data.length - 1]?.id
+          firstProduct: productsData[0]?.id,
+          lastProduct: productsData[productsData.length - 1]?.id
         });
       }
 
       if (currentPage === 1) {
-        setAllProducts(products.data);
-        setTotalProducts(products.total);
-        setHasMore(products.hasNext);
+        setAllProducts(productsData);
+        setTotalProducts(products.total || 0);
+        setHasMore(products.hasNext || false);
         
-        const imageUrls = products.data
+        const imageUrls = productsData
           .slice(0, 20)
           .map(p => p.imageUrl)
           .filter((url): url is string => Boolean(url));
         preloadImages(imageUrls);
         
         if (process.env.NODE_ENV === 'development') {
-          console.log('First page loaded, products set:', products.data.length);
+          console.log('First page loaded, products set:', productsData.length);
         }
       } else {
         setAllProducts(prev => {
-          const newProducts = products.data.filter(
+          const newProducts = productsData.filter(
             newProduct => !prev.some(existingProduct => existingProduct.id === newProduct.id)
           );
           
@@ -131,13 +134,13 @@ export default function InfiniteProductGrid({
             console.log('Appending products:', {
               existing: prev.length,
               new: newProducts.length,
-              filtered: products.data.length - newProducts.length
+              filtered: productsData.length - newProducts.length
             });
           }
           
           return [...prev, ...newProducts];
         });
-        setHasMore(products.hasNext);
+        setHasMore(products.hasNext || false);
       }
       setIsLoadingMore(false);
     }
@@ -333,14 +336,21 @@ export default function InfiniteProductGrid({
       ) : (
         <div className="text-center py-12">
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No products found
+            No products available
           </h3>
           <p className="text-gray-600 mb-6">
             {filters.q 
               ? `No products match your search for "${filters.q}"`
-              : 'No products are available at the moment'
+              : 'The backend database is currently not populated with product data. This is a demo application showing the frontend interface.'
             }
           </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 max-w-md mx-auto">
+            <h4 className="font-medium text-blue-900 mb-2">Demo Information</h4>
+            <p className="text-sm text-blue-800">
+              This frontend is connected to a Railway backend that requires data population. 
+              The interface and functionality are fully working - only the data source needs setup.
+            </p>
+          </div>
           {filters.q && (
             <Button onClick={() => window.location.href = '/products'}>
               Clear Search

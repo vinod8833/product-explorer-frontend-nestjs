@@ -7,6 +7,7 @@ import { useAllCategories } from '@/lib/hooks/useApi';
 import InfiniteProductGrid from '@/components/product/InfiniteProductGrid';
 import AdvancedSearch from '@/components/search/AdvancedSearch';
 import { ProductCardSkeleton } from '@/components/ui/LoadingSkeleton';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 function ProductsContent() {
   const searchParams = useSearchParams();
@@ -113,11 +114,13 @@ function ProductsContent() {
         initialFilters={filters}
       />
 
-      <InfiniteProductGrid 
-        categoryId={categoryId} 
-        filters={enhancedFilters}
-        itemsPerPage={20}
-      />
+      <ErrorBoundary>
+        <InfiniteProductGrid 
+          categoryId={categoryId} 
+          filters={enhancedFilters}
+          itemsPerPage={20}
+        />
+      </ErrorBoundary>
     </div>
   );
 }
