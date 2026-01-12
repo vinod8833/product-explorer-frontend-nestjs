@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3001/api
+      - NEXT_PUBLIC_APP_NAME=Product Data Explorer
+      - NEXT_PUBLIC_APP_DESCRIPTION=Explore products from World of Books with live scraping
+      - NEXT_TELEMETRY_DISABLED=1
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: npm run dev
+
+  # Development backend placeholder
+  backend-dev:
+    image: nginx:alpine  # Temporary placeholder
+    ports:
+      - "3001:80"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
