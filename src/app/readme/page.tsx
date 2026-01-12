@@ -27,7 +27,6 @@ export const metadata: Metadata = {
 export default function ReadmePage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Hero Section */}
       <div className="text-center mb-16">
         <div className="flex items-center justify-center mb-6">
           <BookOpen className="h-16 w-16 text-blue-600 mr-4" />
@@ -41,7 +40,6 @@ export default function ReadmePage() {
         </p>
       </div>
 
-      {/* Quick Start */}
       <section className="mb-16">
         <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
           <CardHeader>

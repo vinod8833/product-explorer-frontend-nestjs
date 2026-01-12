@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable standalone output for Railway deployment
   output: 'standalone',
   
   images: {
@@ -66,7 +65,6 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
-  // Railway-specific configuration
   env: {
     DATABASE_URL: process.env.DATABASE_URL,
   },
