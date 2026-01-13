@@ -13,7 +13,7 @@ A modern Next.js frontend for exploring products with real-time search, advanced
 ```bash
 git clone <your-repo-url>
 cd product-explorer-frontend
-make quick-start
+npm run dev
 ```
 
 🎉 **Application available at:** http://localhost:3000
