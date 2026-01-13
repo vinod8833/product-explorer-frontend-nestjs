@@ -37,6 +37,21 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   category?: Category;
+  detail?: {
+    id: number;
+    productId: number;
+    description?: string;
+    specs?: Record<string, any>;
+    ratingsAvg?: string;
+    reviewsCount?: number;
+    publisher?: string;
+    publicationDate?: string;
+    isbn?: string;
+    pageCount?: number;
+    genres?: string[];
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 export interface ProductDetail extends Product {

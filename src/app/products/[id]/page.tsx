@@ -74,6 +74,22 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const detail = productData.detail || {};
   const reviews = productData.reviews || [];
 
+  // Handle null values gracefully
+  const displayTitle = product.title || 'Untitled';
+  const displayAuthor = product.author || 'Unknown Author';
+  const displayPrice = product.price ? 
+    formatPrice(typeof product.price === 'string' ? parseFloat(product.price) : product.price, product.currency) 
+    : 'Price not available';
+  
+  const displayDescription = detail.description || 'No description available.';
+  const displayPublisher = detail.publisher || 'Unknown Publisher';
+  const displayISBN = detail.isbn || 'Not available';
+  const displayPageCount = detail.pageCount || 'Not specified';
+  const displayGenres = detail.genres || [];
+  const displayRating = detail.ratingsAvg ? parseFloat(detail.ratingsAvg) : null;
+  const displayReviewCount = detail.reviewsCount || 0;
+  const displayPublicationDate = detail.publicationDate || null;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
@@ -129,14 +145,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {product.title}
+              {displayTitle}
             </h1>
-            {product.author && (
-              <p className="text-lg text-gray-600 flex items-center mb-2">
-                <User className="mr-2 h-5 w-5" />
-                by {product.author}
-              </p>
-            )}
+            <p className="text-lg text-gray-600 flex items-center mb-2">
+              <User className="mr-2 h-5 w-5" />
+              by {displayAuthor}
+            </p>
             {product.category && (
               <p className="text-sm text-blue-600 mb-2">
                 <Link 
@@ -150,17 +164,17 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
 
           <div className="text-2xl font-bold text-green-600">
-            {product.price ? formatPrice(typeof product.price === 'string' ? parseFloat(product.price) : product.price, product.currency) : 'Price not available'}
+            {displayPrice}
           </div>
 
-          {detail.ratingsAvg && (
+          {displayRating && (
             <div className="flex items-center space-x-2">
               <div className="flex items-center">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
                     className={`h-5 w-5 ${
-                      i < Math.floor(parseFloat(detail.ratingsAvg)) 
+                      i < Math.floor(displayRating) 
                         ? 'text-yellow-400 fill-current' 
                         : 'text-gray-300'
                     }`}
@@ -168,10 +182,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 ))}
               </div>
               <span className="text-lg text-gray-600">
-                {parseFloat(detail.ratingsAvg).toFixed(1)} out of 5
+                {displayRating.toFixed(1)} out of 5
               </span>
               <span className="text-sm text-gray-500">
-                ({detail.reviewsCount || 0} reviews)
+                ({displayReviewCount} reviews)
               </span>
             </div>
           )}
@@ -186,12 +200,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </span>
           </div>
 
-          {detail.description && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-              <p className="text-gray-700 leading-relaxed">{detail.description}</p>
-            </div>
-          )}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+            <p className="text-gray-700 leading-relaxed">{displayDescription}</p>
+          </div>
 
           <div className="flex gap-4">
           </div>
@@ -210,35 +222,29 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 <span className="text-sm text-gray-600">{product.sourceId}</span>
               </div>
             )}
-            {detail.publisher && (
-              <div className="flex justify-between">
-                <span className="font-medium">Publisher:</span>
-                <span>{detail.publisher}</span>
-              </div>
-            )}
-            {detail.publicationDate && (
+            <div className="flex justify-between">
+              <span className="font-medium">Publisher:</span>
+              <span>{displayPublisher}</span>
+            </div>
+            {displayPublicationDate && (
               <div className="flex justify-between">
                 <span className="font-medium">Publication Date:</span>
-                <span>{formatDate(detail.publicationDate)}</span>
+                <span>{formatDate(displayPublicationDate)}</span>
               </div>
             )}
-            {detail.isbn && (
-              <div className="flex justify-between">
-                <span className="font-medium">ISBN:</span>
-                <span>{detail.isbn}</span>
-              </div>
-            )}
-            {detail.pageCount && (
-              <div className="flex justify-between">
-                <span className="font-medium">Pages:</span>
-                <span>{detail.pageCount}</span>
-              </div>
-            )}
-            {detail.genres && detail.genres.length > 0 && (
+            <div className="flex justify-between">
+              <span className="font-medium">ISBN:</span>
+              <span>{displayISBN}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Pages:</span>
+              <span>{displayPageCount}</span>
+            </div>
+            {displayGenres && displayGenres.length > 0 && (
               <div>
                 <span className="font-medium">Genres:</span>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  {detail.genres.map((genre: string, index: number) => (
+                  {displayGenres.map((genre: string, index: number) => (
                     <span
                       key={index}
                       className="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded"
@@ -258,9 +264,9 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <Star className="mr-2 h-5 w-5" />
               Reviews
             </CardTitle>
-            {detail.ratingsAvg && (
+            {displayRating && (
               <CardDescription>
-                Average rating: {parseFloat(detail.ratingsAvg).toFixed(1)}/5 ({detail.reviewsCount || 0} reviews)
+                Average rating: {displayRating.toFixed(1)}/5 ({displayReviewCount} reviews)
               </CardDescription>
             )}
           </CardHeader>

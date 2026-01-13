@@ -336,21 +336,14 @@ export default function InfiniteProductGrid({
       ) : (
         <div className="text-center py-12">
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No products available
+            No products found
           </h3>
           <p className="text-gray-600 mb-6">
             {filters.q 
               ? `No products match your search for "${filters.q}"`
-              : 'The backend database is currently not populated with product data. This is a demo application showing the frontend interface.'
+              : 'No products are available at the moment'
             }
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 max-w-md mx-auto">
-            <h4 className="font-medium text-blue-900 mb-2">Demo Information</h4>
-            <p className="text-sm text-blue-800">
-              This frontend is connected to a Railway backend that requires data population. 
-              The interface and functionality are fully working - only the data source needs setup.
-            </p>
-          </div>
           {filters.q && (
             <Button onClick={() => window.location.href = '/products'}>
               Clear Search

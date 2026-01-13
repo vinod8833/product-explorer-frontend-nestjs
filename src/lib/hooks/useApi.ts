@@ -13,21 +13,11 @@ export function useNavigation() {
       const response = await api.get('/navigation');
       
       // Check if the response has the expected structure
-      if (response.data && typeof response.data === 'object') {
-        // If it's a message response (backend not fully set up)
-        if (response.data.message && !Array.isArray(response.data)) {
-          console.warn('Backend API not fully configured for navigation:', response.data.message);
-          // Return empty array
-          setData([]);
-        } else if (Array.isArray(response.data)) {
-          // Direct array response (expected format)
-          setData(response.data);
-        } else {
-          // Fallback
-          setData([]);
-        }
+      if (response.data && Array.isArray(response.data)) {
+        // Direct array response (expected format when working)
+        setData(response.data);
       } else {
-        // Fallback for unexpected response structure
+        // Return empty array for endpoints not yet implemented
         setData([]);
       }
       
@@ -74,26 +64,10 @@ export function useCategories(navigationId?: number, page = 1, limit = 20) {
       const response = await api.get(url);
       
       // Check if the response has the expected structure
-      if (response.data && typeof response.data === 'object') {
-        // If it's a message response (backend not fully set up)
-        if (response.data.message && !response.data.data) {
-          console.warn('Backend API not fully configured for categories:', response.data.message);
-          // Return empty data structure
-          setData({
-            data: [],
-            total: 0,
-            page: page,
-            limit: limit,
-            totalPages: 0,
-            hasNext: false,
-            hasPrev: false
-          });
-        } else {
-          // Normal response with data
-          setData(response.data);
-        }
+      if (response.data && typeof response.data === 'object' && Array.isArray(response.data.data)) {
+        setData(response.data);
       } else {
-        // Fallback for unexpected response structure
+        // Return empty data structure for endpoints not yet implemented
         setData({
           data: [],
           total: 0,
@@ -199,25 +173,9 @@ export function useProducts(
       
       const response = await api.get(url);
       
-      // Check if the response has the expected structure
-      if (response.data && typeof response.data === 'object') {
-        // If it's a message response (backend not fully set up)
-        if (response.data.message && !response.data.data) {
-          console.warn('Backend API not fully configured:', response.data.message);
-          // Return empty data structure
-          setData({
-            data: [],
-            total: 0,
-            page: page,
-            limit: limit,
-            totalPages: 0,
-            hasNext: false,
-            hasPrev: false
-          });
-        } else {
-          // Normal response with data
-          setData(response.data);
-        }
+      // The backend now returns the correct structure with data array
+      if (response.data && typeof response.data === 'object' && Array.isArray(response.data.data)) {
+        setData(response.data);
       } else {
         // Fallback for unexpected response structure
         setData({
