@@ -135,8 +135,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             src={product.imageUrl}
             alt={product.title}
             title={product.title}
+            author={product.author}
             isbn={detail.isbn}
             sourceId={product.sourceId}
+            sourceUrl={product.sourceUrl}
             className="object-cover"
             fallbackClassName="w-full h-full flex items-center justify-center"
           />

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { BookOpen } from 'lucide-react';
 import { generateImageFallbacks, EnhancedImageProps } from '@/lib/imageUtils';
+import { getEnhancedImageUrl } from '@/lib/imageScraper';
 
 export default function ProductImage({ 
   src, 
@@ -12,13 +13,16 @@ export default function ProductImage({
   className = "w-full h-full object-cover",
   fallbackClassName = "w-full h-full flex items-center justify-center",
   onImageLoad,
-  onImageError
+  onImageError,
+  author,
+  sourceUrl
 }: EnhancedImageProps) {
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(src);
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [fallbackIndex, setFallbackIndex] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
+  const [isScrapingImages, setIsScrapingImages] = useState(false);
 
   // Ensure alt text is never empty for accessibility
   const safeAlt = alt || title || 'Book cover image';
@@ -60,7 +64,7 @@ export default function ProductImage({
 
   const handleImageError = async () => {
     if (process.env.NODE_ENV === 'development') {
-      console.log(' Image failed to load:', currentSrc, 'Retry:', retryCount, 'Fallback:', fallbackIndex);
+      console.log('🖼️ Image failed to load:', currentSrc, 'Retry:', retryCount, 'Fallback:', fallbackIndex);
     }
     
     if (onImageError) {
@@ -80,10 +84,11 @@ export default function ProductImage({
       return;
     }
 
+    // Try regular fallbacks first
     if (fallbackIndex < fallbacks.length) {
       const nextFallback = fallbacks[fallbackIndex];
       if (process.env.NODE_ENV === 'development') {
-        console.log(' Trying fallback:', nextFallback.url, 'Type:', nextFallback.type);
+        console.log('🖼️ Trying fallback:', nextFallback.url, 'Type:', nextFallback.type);
       }
       
       setCurrentSrc(nextFallback.url);
@@ -93,8 +98,40 @@ export default function ProductImage({
       return;
     }
 
+    // If all fallbacks failed, try web scraping
+    if (!isScrapingImages && (title || isbn)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🕷️ Starting image scraping for:', title);
+      }
+      
+      setIsScrapingImages(true);
+      setImageLoading(true);
+      
+      try {
+        const scrapedUrl = await getEnhancedImageUrl({
+          primaryUrl: src,
+          title,
+          author,
+          isbn,
+          sourceId,
+          sourceUrl,
+        });
+
+        if (scrapedUrl && scrapedUrl !== '/book-cover-placeholder.svg') {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🎉 Found scraped image:', scrapedUrl);
+          }
+          setCurrentSrc(scrapedUrl);
+          setRetryCount(0);
+          return;
+        }
+      } catch (error) {
+        console.error('Image scraping failed:', error);
+      }
+    }
+
     if (process.env.NODE_ENV === 'development') {
-      console.log(' All fallbacks exhausted, showing error state');
+      console.log('❌ All image sources exhausted, showing error state');
     }
     setImageError(true);
     setImageLoading(false);
@@ -102,10 +139,11 @@ export default function ProductImage({
 
   const handleImageLoad = () => {
     if (process.env.NODE_ENV === 'development') {
-      console.log(' Image loaded successfully:', currentSrc);
+      console.log('✅ Image loaded successfully:', currentSrc);
     }
     setImageLoading(false);
     setImageError(false);
+    setIsScrapingImages(false);
     
     if (onImageLoad && currentSrc) {
       onImageLoad(currentSrc);
@@ -137,7 +175,12 @@ export default function ProductImage({
     <div className="relative w-full h-full">
       {imageLoading && (
         <div className={fallbackClassName}>
-          <div className="animate-pulse bg-gray-300 w-12 h-12 rounded"></div>
+          <div className="text-center">
+            <div className="animate-pulse bg-gray-300 w-12 h-12 rounded mb-2"></div>
+            {isScrapingImages && (
+              <p className="text-xs text-blue-600">Searching for cover...</p>
+            )}
+          </div>
         </div>
       )}
       <Image
@@ -155,8 +198,10 @@ export default function ProductImage({
       />
       {process.env.NODE_ENV === 'development' && (
         <div className="absolute top-1 left-1 bg-black bg-opacity-75 text-white text-xs px-1 py-0.5 rounded">
-          {currentSrc?.includes('openlibrary.org') ? 'OL' : 
-           currentSrc?.includes('/book-cover-placeholder.svg') ? 'Local' : 'Other'}
+          {currentSrc?.includes('googleapis.com') ? 'GB' :
+           currentSrc?.includes('openlibrary.org') ? 'OL' : 
+           currentSrc?.includes('/book-cover-placeholder.svg') ? 'Local' : 
+           currentSrc?.includes('worldofbooks.com') ? 'WOB' : 'Other'}
         </div>
       )}
     </div>

@@ -104,8 +104,10 @@ export interface EnhancedImageProps {
   src?: string;
   alt?: string;
   title?: string;
+  author?: string;
   isbn?: string;
   sourceId?: string;
+  sourceUrl?: string;
   className?: string;
   fallbackClassName?: string;
   onImageLoad?: (src: string) => void;

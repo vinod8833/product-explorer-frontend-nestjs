@@ -50,8 +50,10 @@ export default function ProductCard({
               src={product.imageUrl}
               alt={displayTitle}
               title={displayTitle}
+              author={displayAuthor}
               isbn={product.detail?.isbn}
               sourceId={product.sourceId}
+              sourceUrl={product.sourceUrl}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
               fallbackClassName="w-full h-full flex items-center justify-center bg-gray-100"
             />
